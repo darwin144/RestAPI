@@ -13,10 +13,9 @@ namespace RestAPI
 
             builder.Services.AddControllers();
 
+            // add dbcontext to database server
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-
             builder.Services.AddDbContext<BookingManagementContext>(options => options.UseSqlServer(connectionString));
-
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
