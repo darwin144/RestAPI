@@ -15,8 +15,8 @@ namespace RestAPI.Model
         public Guid UniversityGuid { get; set; }
 
         // kardinalitas
-        public University University { get; set; }
-        public Employee Employee { get; set; }
+        public University? University { get; set; }
+        public Employee? Employee { get; set; }
 
     }
 }

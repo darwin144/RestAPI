@@ -9,6 +9,6 @@ namespace RestAPI.Model
         public string Name { get; set; }
 
         // kardinalitas
-        public ICollection<AccountRole> AccountRoles { get; set; }
+        public ICollection<AccountRole>? AccountRoles { get; set; }
     }
 }

@@ -17,7 +17,7 @@ namespace RestAPI.Model
         public DateTime ExpiredTime { get; set; }
 
         //kardinalitas
-        public Employee Employee { get; set; }
-        public ICollection<AccountRole> Accountroles {get;set;}
+        public Employee? Employee { get; set; }
+        public ICollection<AccountRole>? Accountroles {get;set;}
     }
 }

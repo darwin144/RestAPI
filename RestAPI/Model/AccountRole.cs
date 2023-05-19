@@ -12,8 +12,8 @@ namespace RestAPI.Model
         public Guid RoleGuid { get; set; }
         
         //kardinalitas
-        public Account Account { get; set; }
-        public Role Role { get; set; }
+        public Account? Account { get; set; }
+        public Role? Role { get; set; }
 
 
 

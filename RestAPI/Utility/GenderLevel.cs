@@ -3,7 +3,7 @@
     public enum GenderLevel
     {
         Female,
-        Mele
+        Male
 
     }
 }

@@ -20,7 +20,7 @@ namespace RestAPI.Model
         public Guid EmployeeGuid { get; set; }
         
         // kardinalitas
-        public Employee Employee { get; set; }
-        public Room Room { get; set; }
+        public Employee? Employee { get; set; }
+        public Room? Room { get; set; }
     }
 }
