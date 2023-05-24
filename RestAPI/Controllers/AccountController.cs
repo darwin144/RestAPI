@@ -2,6 +2,7 @@
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.Repository;
+using RestAPI.ViewModels.Accounts;
 
 namespace RestAPI.Controllers
 {
@@ -9,12 +10,15 @@ namespace RestAPI.Controllers
     [Route("RestAPI/[controller]")]
     public class AccountController : Controller
     {
-        private readonly IUniversityRepository<Account> _accountRepository;
+        private readonly IAccountRepository _accountRepository;
+        private readonly IMapper<Account,AccountVM> _mapper;
 
-        public AccountController(IUniversityRepository<Account> accountRepository)
+        public AccountController(IAccountRepository accountRepository, IMapper<Account, AccountVM> mapper)
         {
             _accountRepository = accountRepository;
+            _mapper = mapper;
         }
+
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -23,8 +27,8 @@ namespace RestAPI.Controllers
             {
                 return NotFound();
             }
-
-            return Ok(accounts);
+            var AccountConverteds = accounts.Select(_mapper.Map).ToList();
+            return Ok(AccountConverteds);
         }
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
@@ -34,12 +38,14 @@ namespace RestAPI.Controllers
             {
                 return NotFound();
             }
-            return Ok(account);
+            var accountConverted = _mapper.Map(account);
+            return Ok(accountConverted);
+        
         }
         [HttpPost]
-        public IActionResult Create(Account account)
+        public IActionResult Create(AccountVM accountVM)
         {
-
+            var account = _mapper.Map(accountVM);
             var result = _accountRepository.Create(account);
             if (result is null)
             {
@@ -49,8 +55,9 @@ namespace RestAPI.Controllers
 
         }
         [HttpPut]
-        public IActionResult Update(Account account)
+        public IActionResult Update(AccountVM accountVM)
         {
+            var account = _mapper.Map(accountVM);
             var isUpdated = _accountRepository.Update(account);
             if (!isUpdated)
             {

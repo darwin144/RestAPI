@@ -2,6 +2,8 @@
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.Repository;
+using RestAPI.ViewModels.Educations;
+using RestAPI.ViewModels.Universities;
 
 namespace RestAPI.Controllers
 {
@@ -9,12 +11,15 @@ namespace RestAPI.Controllers
     [Route("RestAPI/[controller]")]
     public class EducationController : ControllerBase
     {
-        private readonly IUniversityRepository<Education> _educationRepository;
+        private readonly IEducatiionRepository _educationRepository;
+        private readonly IMapper<Education, EducationVM> _mapper;
 
-        public EducationController(IUniversityRepository<Education> educationRepository)
+        public EducationController(IEducatiionRepository educationRepository, IMapper<Education, EducationVM> mapper)
         {
             _educationRepository = educationRepository;
+            _mapper = mapper;
         }
+
         [HttpGet]
         public IActionResult GetAll()
         {
@@ -23,8 +28,9 @@ namespace RestAPI.Controllers
             {
                 return NotFound();
             }
+            var educationConverted = educations.Select(_mapper.Map).ToList();
 
-            return Ok(educations);
+            return Ok(educationConverted);
         }
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
@@ -34,13 +40,18 @@ namespace RestAPI.Controllers
             {
                 return NotFound();
             }
-            return Ok(education);
+            //var educationConverted = EducationVM.ToVM(education);
+
+            //menggunakan mapper
+            var educationConverted = _mapper.Map(education);
+            return Ok(educationConverted);
         }
         [HttpPost]
-        public IActionResult Create(Education education)
+        public IActionResult Create(EducationVM educationVM)
         {
-
-            var result = _educationRepository.Create(education);
+            //var EducationConverted = EducationVM.ToModel(educationVM);
+            var educationConverted = _mapper.Map(educationVM);
+            var result = _educationRepository.Create(educationConverted);
             if (result is null)
             {
                 return BadRequest();
@@ -49,13 +60,16 @@ namespace RestAPI.Controllers
 
         }
         [HttpPut]
-        public IActionResult Update(Education education)
+        public IActionResult Update(EducationVM educationVM)
         {
-            var isUpdated = _educationRepository.Update(education);
+            var educationConverted = EducationVM.ToModel(educationVM);
+            var isUpdated = _educationRepository.Update(educationConverted);
+
             if (!isUpdated)
             {
                 return BadRequest();
             }
+            
             return Ok();
         }
         [HttpDelete]

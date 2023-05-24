@@ -3,6 +3,7 @@ using RestAPI.Context;
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.Repository;
+using RestAPI.ViewModels.Universities;
 
 namespace RestAPI
 {
@@ -20,15 +21,17 @@ namespace RestAPI
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
             builder.Services.AddDbContext<BookingManagementContext>(options => options.UseSqlServer(connectionString));
 
-            builder.Services.AddScoped<IUniversityRepository<University>, UniversityRepository>();
-            builder.Services.AddScoped<IUniversityRepository<Room>, RoomRepository>();
-            builder.Services.AddScoped<IUniversityRepository<Role>, RoleRepository>();
-            builder.Services.AddScoped<IUniversityRepository<Employee>, EmployeeRepository>();
-            builder.Services.AddScoped<IUniversityRepository<Education>, EducationRepository>();
-            builder.Services.AddScoped<IUniversityRepository<Booking>, BookingRepository>();
-            builder.Services.AddScoped<IUniversityRepository<AccountRole>, AccountRoleRepository>();
-            builder.Services.AddScoped<IUniversityRepository<Account>, AccountRepository>();
+            builder.Services.AddScoped<IUniversityRepository, UniversityRepository>();
+            builder.Services.AddScoped<IRoomRepository, RoomRepository>();
+            builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+            builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+            builder.Services.AddScoped<IEducatiionRepository, EducationRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            builder.Services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();
+            builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
+
+            builder.Services.AddSingleton(typeof(IMapper<,>),typeof(Mapper<,>));
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

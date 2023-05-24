@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
+using RestAPI.ViewModels.Rooms;
 
 namespace RestAPI.Controllers
 {
@@ -8,39 +9,63 @@ namespace RestAPI.Controllers
     [Route("RestAPI/[controller]")]
     public class RoomController : ControllerBase
     {
-        private readonly IUniversityRepository<Room> _universityRepository;
+        private readonly IRoomRepository _roomRepository;
+        private readonly IMapper<Room, RoomVM> _mapper;
 
-        public RoomController(IUniversityRepository<Room> universityRepository)
+        public RoomController(IRoomRepository roomRepository, IMapper<Room, RoomVM> mapper)
         {
-            _universityRepository = universityRepository;
+            _roomRepository = roomRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
         public IActionResult GetAll()
         {
-            var rooms = _universityRepository.GetAll();
+            var rooms = _roomRepository.GetAll();
             if (!rooms.Any())
             {
                 return NotFound();
             }
+            var roomConverted = rooms.Select(_mapper.Map).ToList();
 
-            return Ok(rooms);
+            return Ok(roomConverted);
         }
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
-            var room = _universityRepository.GetByGuid(guid);
+            var room = _roomRepository.GetByGuid(guid);
             if (room is null)
             {
                 return NotFound();
             }
-            return Ok(room);
+            var roomConverted = _mapper.Map(room);
+            return Ok(roomConverted);
         }
+
+        [HttpGet("room")]
+        public IActionResult GetRoomByDate()
+        {
+            try
+            {
+                var room = _roomRepository.GetRoomByDate();
+                if (room is null)
+                {
+                    return Ok("tidak ada data");
+                }
+
+                return Ok(room);
+            }
+            catch {
+                return Ok("ada error");
+            }
+        }
+
         [HttpPost]
-        public IActionResult Create(Room room)
+        public IActionResult Create(RoomVM roomVM)
         {
 
-            var result = _universityRepository.Create(room);
+            var room = _mapper.Map(roomVM); 
+            var result = _roomRepository.Create(room);
             if (result is null)
             {
                 return BadRequest();
@@ -49,9 +74,10 @@ namespace RestAPI.Controllers
 
         }
         [HttpPut]
-        public IActionResult Update(Room room)
+        public IActionResult Update(RoomVM roomVM)
         {
-            var isUpdated = _universityRepository.Update(room);
+            var room = _mapper.Map(roomVM);
+            var isUpdated = _roomRepository.Update(room);
             if (!isUpdated)
             {
                 return BadRequest();
@@ -61,7 +87,7 @@ namespace RestAPI.Controllers
         [HttpDelete]
         public IActionResult Delete(Guid guid)
         {
-            var isDeleted = _universityRepository.Delete(guid);
+            var isDeleted = _roomRepository.Delete(guid);
             if (!isDeleted)
             {
                 return BadRequest();

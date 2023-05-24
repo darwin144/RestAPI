@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
+using RestAPI.ViewModels.Roles;
 
 namespace RestAPI.Controllers
 {
@@ -8,11 +9,13 @@ namespace RestAPI.Controllers
     [Route("RestAPI/[controller]")]
     public class RoleController : ControllerBase
     {
-        private readonly IUniversityRepository<Role> _roleRepository;
+        private readonly IRoleRepository _roleRepository;
+        public readonly IMapper<Role,RoleVM> _mapper;
 
-        public RoleController(Contracts.IUniversityRepository<Role> roleRepository)
+        public RoleController(IRoleRepository roleRepository, Contracts.IMapper<Role, RoleVM> mapper)
         {
             _roleRepository = roleRepository;
+            _mapper = mapper;
         }
 
         [HttpGet]
@@ -23,23 +26,26 @@ namespace RestAPI.Controllers
             {
                 return NotFound();
             }
+            var roleConverted = roles.Select(_mapper.Map).ToList();
 
-            return Ok(roles);
+            return Ok(roleConverted);
         }
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
+            
             var role = _roleRepository.GetByGuid(guid);
             if (role is null)
             {
                 return NotFound();
             }
-            return Ok(role);
+            var roleConverted = _mapper.Map(role);
+            return Ok(roleConverted);
         }
         [HttpPost]
-        public IActionResult Create(Role role)
+        public IActionResult Create(RoleVM roleVM)
         {
-
+            var role = _mapper.Map(roleVM);
             var result = _roleRepository.Create(role);
             if (result is null)
             {
@@ -49,8 +55,9 @@ namespace RestAPI.Controllers
 
         }
         [HttpPut]
-        public IActionResult Update(Role role)
+        public IActionResult Update(RoleVM roleVM)
         {
+            var role = _mapper.Map(roleVM);
             var isUpdated = _roleRepository.Update(role);
             if (!isUpdated)
             {

@@ -5,70 +5,18 @@ using RestAPI.Model;
 
 namespace RestAPI.Repository
 {
-    public class EmployeeRepository : IUniversityRepository<Employee>
+    public class EmployeeRepository : BaseRepository<Employee>, IEmployeeRepository
     {
-        private readonly BookingManagementContext _context;
-
-        public EmployeeRepository(BookingManagementContext context)
+        public EmployeeRepository(BookingManagementContext context) : base(context)
         {
-            _context = context;
         }
 
-        public Employee Create(Employee employee)
+        public Employee GetByEmployeeGuid(Guid bookingGuid)
         {
-            try
-            {
-                _context.Set<Employee>().Add(employee);
-                _context.SaveChanges();
-                return employee;
-            }
-            catch
-            {
-                return new Employee();
-            }
-        }
+            var entity = _context.Set<Employee>().Find(bookingGuid);
 
-        public bool Delete(Guid guid)
-        {
-            try
-            {
-                var employee = GetByGuid(guid);
-                if (employee is null)
-                {
-                    return false;
-                }
-                _context.Set<Employee>().Remove(employee);
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
-        }
-
-        public IEnumerable<Employee> GetAll()
-        {
-            return _context.Set<Employee>().ToList();
-        }
-
-        public Employee GetByGuid(Guid guid)
-        {
-            return _context.Set<Employee>().Find(guid);
-        }
-
-        public bool Update(Employee employee)
-        {
-            try
-            {
-                _context.Set<Employee>().Update(employee);
-                _context.SaveChanges();
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            _context.ChangeTracker.Clear();
+            return entity;
         }
     }
 }
