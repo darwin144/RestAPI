@@ -42,7 +42,7 @@ namespace RestAPI.Controllers
             return Ok(roomConverted);
         }
 
-        [HttpGet("room")]
+        [HttpGet("RoomAvailable")]
         public IActionResult GetRoomByDate()
         {
             try

@@ -19,13 +19,6 @@ namespace RestAPI.Repository
             _contextBooking = booking;
         }
 
-        public RoomBookedTodayVM GetRoomByGuid(Guid bookingGuid)
-        {
-            var entity = _context.Set<RoomBookedTodayVM>().Find(bookingGuid);
-            _context.ChangeTracker.Clear();
-            return entity;
-        }
-
         public IEnumerable<RoomBookedTodayVM> GetRoomByDate() {
             try
             {
@@ -34,10 +27,9 @@ namespace RestAPI.Repository
                 var rooms = GetAll();
                     
                 var startToday = DateTime.Today;
-                var endToday = DateTime.Today.AddHours(23.99);
+                var endToday = DateTime.Today.AddHours(23).AddMinutes(59);
 
-
-                var roomUse = rooms.Join(booking, Room=> Room.Guid, booking => booking.RoomGuid,( Room, booking) => 
+                var roomUse = rooms.Join(booking, Room => Room.Guid, booking => booking.RoomGuid,( Room, booking) => 
                 new { Room, booking})
                         .Select(joinResult => new {
                             joinResult.Room.Name,
@@ -47,27 +39,16 @@ namespace RestAPI.Repository
                             joinResult.booking.EndDate
                         }
                  );
-
-                var roomUseTodays = new List<RoomBookedTodayVM>();
+                var roomUseTodays = new List<RoomBookedTodayVM>();                                
                 foreach (var room in roomUse)
                 {
-                    if (room.StartDate > startToday && room.EndDate > endToday)
+                    if ((room.StartDate > startToday && room.EndDate > endToday) || (room.StartDate < startToday && room.EndDate < startToday))
                     {
                         var roomDay = new RoomBookedTodayVM
                         {
                             RoomName = room.Name,
                             Floor = room.Floor,
-                            Capacity = room.Capacity
-                        };
-                        roomUseTodays.Add(roomDay);
-                    }
-                    if (room.StartDate < startToday && room.EndDate < startToday)
-                    {
-                        var roomDay = new RoomBookedTodayVM
-                        {
-                            RoomName = room.Name,
-                            Floor = room.Floor,
-                            Capacity = room.Capacity
+                            Capacity = room.Capacity,
                         };
                         roomUseTodays.Add(roomDay);
                     }

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using RestAPI.Context;
 using RestAPI.Contracts;
 using RestAPI.Model;
@@ -27,10 +28,11 @@ namespace RestAPI
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
             builder.Services.AddScoped<IEducatiionRepository, EducationRepository>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
+            builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
-
+       
             builder.Services.AddSingleton(typeof(IMapper<,>),typeof(Mapper<,>));
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

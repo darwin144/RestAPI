@@ -33,11 +33,8 @@ namespace RestAPI.Controllers
         {
             try
             {
-                var bookings = _bokingRepository.GetAll();               
-                var employees = _employeeRepository.GetAll();
-                var rooms = _roomRepository.GetAll();
-
-                var results = _bokingRepository.GetAllBookingDetail(bookings, employees, rooms);
+                
+                var results = _bokingRepository.GetAllBookingDetail();
 
                 return Ok(results);
             }
@@ -51,17 +48,15 @@ namespace RestAPI.Controllers
         {
             try
             {
-                var bookingResult = _bokingRepository.GetByGuid(guid);
-                Booking booking = bookingResult;
-                if (booking is null)
+                var bookingDetailVM = _bokingRepository.GetBookingDetailByGuid(guid);
+
+                if (bookingDetailVM is null)
                 {
                     return Ok("Tidak ditemukan objek dengan Guid ini");
                 }
-                var employeeResult = _employeeRepository.GetByGuid(bookingResult.EmployeeGuid);
-                var roomResult = _roomRepository.GetByGuid(bookingResult.RoomGuid);
-                var bookingDetailVM = _bokingRepository.GetBookingDetailByGuid(bookingResult, employeeResult, roomResult);
+                
 
-                return Ok("Berhasil");
+                return Ok(bookingDetailVM);
             }
             catch {
                 return Ok("Ada Error");
