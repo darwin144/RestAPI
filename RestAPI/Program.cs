@@ -26,7 +26,7 @@ namespace RestAPI
             builder.Services.AddScoped<IRoomRepository, RoomRepository>();
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
-            builder.Services.AddScoped<IEducatiionRepository, EducationRepository>();
+            builder.Services.AddScoped<IEducationRepository, EducationRepository>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();

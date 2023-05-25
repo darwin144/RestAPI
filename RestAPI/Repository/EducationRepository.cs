@@ -4,7 +4,7 @@ using RestAPI.Model;
 
 namespace RestAPI.Repository
 {
-    public class EducationRepository : BaseRepository<Education>, IEducatiionRepository
+    public class EducationRepository : BaseRepository<Education>, IEducationRepository
     {
         public EducationRepository(BookingManagementContext context) : base(context)
         {

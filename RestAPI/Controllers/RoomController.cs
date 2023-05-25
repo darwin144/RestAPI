@@ -10,13 +10,43 @@ namespace RestAPI.Controllers
     public class RoomController : ControllerBase
     {
         private readonly IRoomRepository _roomRepository;
+        private readonly IBookingRepository _bookingRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly IMapper<Room, RoomVM> _mapper;
 
-        public RoomController(IRoomRepository roomRepository, IMapper<Room, RoomVM> mapper)
+        public RoomController(IRoomRepository roomRepository, IBookingRepository bookingRepository, IEmployeeRepository employeeRepository, IMapper<Room, RoomVM> mapper)
         {
             _roomRepository = roomRepository;
+            _bookingRepository = bookingRepository;
+            _employeeRepository = employeeRepository;
             _mapper = mapper;
         }
+
+
+        [HttpGet("CurrentlyUsedRooms")]
+        public IActionResult GetCurrentlyUsedRooms()
+        {
+            var room = _roomRepository.GetCurrentlyUsedRooms();
+            if (room is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(room);
+        }
+
+        [HttpGet("CurrentlyUsedRoomsByDate")]
+        public IActionResult GetCurrentlyUsedRooms(DateTime dateTime)
+        {
+            var room = _roomRepository.GetByDate(dateTime);
+            if (room is null)
+            {
+                return NotFound();
+            }
+
+            return Ok(room);
+        }
+
 
         [HttpGet]
         public IActionResult GetAll()

@@ -9,6 +9,10 @@ namespace RestAPI.Contracts
         BookingDetailVM GetBookingDetailByGuid(Guid guid);
         IEnumerable<BookingDetailVM> GetAllBookingDetail();
 
+        // kelompok 3
+        IEnumerable<BookingDurationVM> GetBookingDuration();
+
+
 
 
     }

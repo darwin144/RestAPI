@@ -11,11 +11,11 @@ namespace RestAPI.Controllers
     public class UniversityController : Controller
     {
         private readonly IUniversityRepository _universityRepository;
-        private readonly IEducatiionRepository _educationRepository;
+        private readonly IEducationRepository _educationRepository;
         private readonly IMapper<University, UniversityVM> _mapper;
         private readonly IMapper<Education, EducationVM> _educationMapper;
 
-        public UniversityController(IUniversityRepository universityRepository, IEducatiionRepository educationRepository, IMapper<University, UniversityVM> mapper, IMapper<Education, EducationVM> educationMapper)
+        public UniversityController(IUniversityRepository universityRepository, IEducationRepository educationRepository, IMapper<University, UniversityVM> mapper, IMapper<Education, EducationVM> educationMapper)
         {
             _universityRepository = universityRepository;
             _educationRepository = educationRepository;

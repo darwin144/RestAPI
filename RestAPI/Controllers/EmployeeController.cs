@@ -11,37 +11,46 @@ namespace RestAPI.Controllers
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEducationRepository _educationRepository;
+        private readonly IUniversityRepository _universityRepository;
+
         private readonly IMapper<Employee, EmployeeVM> _mapper;
 
-        public EmployeeController(IEmployeeRepository employeeRepository, IMapper<Employee, EmployeeVM> mapper)
+        public EmployeeController(IEmployeeRepository employeeRepository, IEducationRepository educationRepository, IUniversityRepository universityRepository, IMapper<Employee, EmployeeVM> mapper)
         {
             _employeeRepository = employeeRepository;
+            _educationRepository = educationRepository;
+            _universityRepository = universityRepository;
             _mapper = mapper;
         }
 
-        [HttpGet]
+
+
+
+        [HttpGet("GetAllMasterEmployee")]
         public IActionResult GetAll()
         {
-            var employees = _employeeRepository.GetAll();
-            if (!employees.Any())
+            var masterEmployees = _employeeRepository.GetAllMasterEmployee();
+            if (!masterEmployees.Any())
             {
                 return NotFound();
             }
 
-            var emploeeConverted = employees.Select(_mapper.Map).ToList();
-            return Ok(emploeeConverted);
+            return Ok(masterEmployees);
         }
-        [HttpGet("{guid}")]
-        public IActionResult GetByGuid(Guid guid)
+
+        [HttpGet("GetMasterEmployeeByGuid")]
+        public IActionResult GetMasterEmployeeByGuid(Guid guid)
         {
-            var employee = _employeeRepository.GetByGuid(guid);
-            if (employee is null)
+            var masterEmployees = _employeeRepository.GetMasterEmployeeByGuid(guid);
+            if (masterEmployees is null)
             {
                 return NotFound();
             }
-            var employeeConverted = _mapper.Map(employee);
-            return Ok(employeeConverted);
+
+            return Ok(masterEmployees);
         }
+
         [HttpPost]
         public IActionResult Create(EmployeeVM employeeVM)
         {

@@ -15,18 +15,34 @@ namespace RestAPI.Controllers
     [Route("RestAPI/[controller]")]
     public class BookingController : ControllerBase
     {
-        private readonly IBookingRepository _bokingRepository;
+        private readonly IBookingRepository _bookingRepository;
         private readonly IMapper<Booking, BookingVM> _mapper;
         private readonly IRoomRepository _roomRepository;
         private readonly IEmployeeRepository _employeeRepository;
 
         public BookingController(IBookingRepository bokingRepository, IMapper<Booking, BookingVM> mapper, IRoomRepository roomRepository, IEmployeeRepository employeeRepository)
         {
-            _bokingRepository = bokingRepository;
+            _bookingRepository = bokingRepository;
             _mapper = mapper;
             _roomRepository = roomRepository;
             _employeeRepository = employeeRepository;
         }
+
+
+
+        [HttpGet("bookingduration")]
+        public IActionResult GetDuration()
+        {
+            var bookingLengths = _bookingRepository.GetBookingDuration();
+            if (!bookingLengths.Any())
+            {
+                return NotFound();
+            }
+
+            return Ok(bookingLengths);
+        }
+
+
 
         [HttpGet("BookingDetail")]
         public IActionResult GetAllBookingDetail()
@@ -34,7 +50,7 @@ namespace RestAPI.Controllers
             try
             {
                 
-                var results = _bokingRepository.GetAllBookingDetail();
+                var results = _bookingRepository.GetAllBookingDetail();
 
                 return Ok(results);
             }
@@ -48,7 +64,7 @@ namespace RestAPI.Controllers
         {
             try
             {
-                var bookingDetailVM = _bokingRepository.GetBookingDetailByGuid(guid);
+                var bookingDetailVM = _bookingRepository.GetBookingDetailByGuid(guid);
 
                 if (bookingDetailVM is null)
                 {
@@ -66,7 +82,7 @@ namespace RestAPI.Controllers
         [HttpGet]
         public IActionResult GetAll()
         {
-            var bookings = _bokingRepository.GetAll();
+            var bookings = _bookingRepository.GetAll();
             if (!bookings.Any())
             {
                 return NotFound();
@@ -77,7 +93,7 @@ namespace RestAPI.Controllers
         [HttpGet("{guid}")]
         public IActionResult GetByGuid(Guid guid)
         {
-            var booking = _bokingRepository.GetByGuid(guid);
+            var booking = _bookingRepository.GetByGuid(guid);
             if (booking is null)
             {
                 return NotFound();
@@ -89,7 +105,7 @@ namespace RestAPI.Controllers
         public IActionResult Create(BookingVM bookingVM)
         {
             var booking = _mapper.Map(bookingVM);
-            var result = _bokingRepository.Create(booking);
+            var result = _bookingRepository.Create(booking);
             if (result is null)
             {
                 return BadRequest();
@@ -101,7 +117,7 @@ namespace RestAPI.Controllers
         public IActionResult Update(BookingVM bookingVM)
         {
             var booking = _mapper.Map(bookingVM);
-            var isUpdated = _bokingRepository.Update(booking);
+            var isUpdated = _bookingRepository.Update(booking);
             if (!isUpdated)
             {
                 return BadRequest();
@@ -111,7 +127,7 @@ namespace RestAPI.Controllers
         [HttpDelete]
         public IActionResult Delete(Guid guid)
         {
-            var isDeleted = _bokingRepository.Delete(guid);
+            var isDeleted = _bookingRepository.Delete(guid);
             if (!isDeleted)
             {
                 return BadRequest();
