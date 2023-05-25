@@ -60,7 +60,6 @@ namespace RestAPI.Repository
             _context.ChangeTracker.Clear();
             return entity;
         }
-
         public bool Update(TEntity entity)
         {
             try

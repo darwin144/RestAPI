@@ -1,77 +1,60 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
+using RestAPI.Others;
 using RestAPI.ViewModels.Rooms;
 
 namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class RoomController : ControllerBase
+    public class RoomController : GeneralController<Room, RoomVM, IRoomRepository>
     {
         private readonly IRoomRepository _roomRepository;
-        private readonly IBookingRepository _bookingRepository;
-        private readonly IEmployeeRepository _employeeRepository;
-        private readonly IMapper<Room, RoomVM> _mapper;
-
-        public RoomController(IRoomRepository roomRepository, IBookingRepository bookingRepository, IEmployeeRepository employeeRepository, IMapper<Room, RoomVM> mapper)
+        
+        public RoomController(IRoomRepository roomRepository, IGeneralRepository<Room> generalRepository, IMapper<Room, RoomVM> mapper) : base(generalRepository, mapper)
         {
             _roomRepository = roomRepository;
-            _bookingRepository = bookingRepository;
-            _employeeRepository = employeeRepository;
-            _mapper = mapper;
         }
-
 
         [HttpGet("CurrentlyUsedRooms")]
         public IActionResult GetCurrentlyUsedRooms()
         {
-            var room = _roomRepository.GetCurrentlyUsedRooms();
-            if (room is null)
-            {
-                return NotFound();
+            var respons = new ResponseVM<IEnumerable<RoomUsedVM>>();
+            try
+            {          
+                var room = _roomRepository.GetCurrentlyUsedRooms();
+                if (room.Count() < 1)
+                {
+                    return NotFound(respons.NotFound(room));
+                }
+                var succes = respons.Success(room);
+                return Ok(succes);
             }
+            catch (Exception ex) {
 
-            return Ok(room);
+                return BadRequest(respons.Error(ex.Message));
+            }
         }
 
         [HttpGet("CurrentlyUsedRoomsByDate")]
         public IActionResult GetCurrentlyUsedRooms(DateTime dateTime)
         {
-            var room = _roomRepository.GetByDate(dateTime);
-            if (room is null)
+            var respons = new ResponseVM<IEnumerable<MasterRoomVM>>();
+            try
             {
-                return NotFound();
+                var room = _roomRepository.GetByDate(dateTime);
+                if (room is null)
+                {
+                    return NotFound(respons.NotFound(room));
+                }
+
+                return Ok(respons.Success(room));
             }
-
-            return Ok(room);
-        }
-
-
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var rooms = _roomRepository.GetAll();
-            if (!rooms.Any())
-            {
-                return NotFound();
+            catch(Exception ex) {
+                return BadRequest(respons.Error(ex.Message));
             }
-            var roomConverted = rooms.Select(_mapper.Map).ToList();
-
-            return Ok(roomConverted);
         }
-        [HttpGet("{guid}")]
-        public IActionResult GetByGuid(Guid guid)
-        {
-            var room = _roomRepository.GetByGuid(guid);
-            if (room is null)
-            {
-                return NotFound();
-            }
-            var roomConverted = _mapper.Map(room);
-            return Ok(roomConverted);
-        }
-
         [HttpGet("RoomAvailable")]
         public IActionResult GetRoomByDate()
         {
@@ -80,49 +63,38 @@ namespace RestAPI.Controllers
                 var room = _roomRepository.GetRoomByDate();
                 if (room is null)
                 {
-                    return Ok("tidak ada data");
+                    return NotFound(new ResponseVM<IEnumerable<RoomBookedTodayVM>>
+                    {
+                        Code = 400,
+                        Status = "Not Found",
+                        Message = "Ruangan Tidak Ditemukan",
+                        Data = room
+                    }
+                    );
                 }
 
-                return Ok(room);
+                return Ok(new ResponseVM<IEnumerable<RoomBookedTodayVM>>
+                {
+
+                    Code = 200,
+                    Status = "OK",
+                    Message = "Success",
+                    Data = room
+                }
+                );
             }
-            catch {
-                return Ok("ada error");
+            catch
+            {
+                return NotFound(new ResponseVM<RoomBookedTodayVM>
+                {
+                    Code = 500,
+                    Status = "Failed",
+                    Message = "Runtime error acces Server",
+                }
+              );
             }
         }
 
-        [HttpPost]
-        public IActionResult Create(RoomVM roomVM)
-        {
-
-            var room = _mapper.Map(roomVM); 
-            var result = _roomRepository.Create(room);
-            if (result is null)
-            {
-                return BadRequest();
-            }
-            return Ok(result);
-
-        }
-        [HttpPut]
-        public IActionResult Update(RoomVM roomVM)
-        {
-            var room = _mapper.Map(roomVM);
-            var isUpdated = _roomRepository.Update(room);
-            if (!isUpdated)
-            {
-                return BadRequest();
-            }
-            return Ok();
-        }
-        [HttpDelete]
-        public IActionResult Delete(Guid guid)
-        {
-            var isDeleted = _roomRepository.Delete(guid);
-            if (!isDeleted)
-            {
-                return BadRequest();
-            }
-            return Ok();
-        }
+        
     }
 }

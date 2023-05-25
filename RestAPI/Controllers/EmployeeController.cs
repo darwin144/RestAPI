@@ -1,88 +1,61 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
+using RestAPI.Others;
 using RestAPI.Repository;
 using RestAPI.ViewModels.Employees;
+using RestAPI.ViewModels.Rooms;
 
 namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class EmployeeController : ControllerBase
+    public class EmployeeController : GeneralController<Employee, EmployeeVM, IEmployeeRepository>
     {
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IEducationRepository _educationRepository;
-        private readonly IUniversityRepository _universityRepository;
 
-        private readonly IMapper<Employee, EmployeeVM> _mapper;
-
-        public EmployeeController(IEmployeeRepository employeeRepository, IEducationRepository educationRepository, IUniversityRepository universityRepository, IMapper<Employee, EmployeeVM> mapper)
+        public EmployeeController(IEmployeeRepository employeeRepository,IGeneralRepository<Employee> generalRepository, IMapper<Employee, EmployeeVM> mapper) : base(generalRepository, mapper)
         {
             _employeeRepository = employeeRepository;
-            _educationRepository = educationRepository;
-            _universityRepository = universityRepository;
-            _mapper = mapper;
         }
 
-
-
-
         [HttpGet("GetAllMasterEmployee")]
-        public IActionResult GetAll()
+        public IActionResult GetAllMasterEmployee()
         {
-            var masterEmployees = _employeeRepository.GetAllMasterEmployee();
-            if (!masterEmployees.Any())
+            var respons = new ResponseVM<IEnumerable<MasterEmployeeVM>>();
+            try
             {
-                return NotFound();
-            }
+                var masterEmployees = _employeeRepository.GetAllMasterEmployee();
+                if (!masterEmployees.Any())
+                {
+                    return NotFound(respons.NotFound(masterEmployees));
+                }
 
-            return Ok(masterEmployees);
+                return Ok(respons.Success(masterEmployees));
+            }
+            catch (Exception ex) {
+                return BadRequest(respons.Error(ex.Message));
+            }
         }
 
         [HttpGet("GetMasterEmployeeByGuid")]
         public IActionResult GetMasterEmployeeByGuid(Guid guid)
         {
-            var masterEmployees = _employeeRepository.GetMasterEmployeeByGuid(guid);
-            if (masterEmployees is null)
+            var respons = new ResponseVM<MasterEmployeeVM>();
+            try
             {
-                return NotFound();
-            }
+                var masterEmployees = _employeeRepository.GetMasterEmployeeByGuid(guid);
+                if (masterEmployees is null)
+                {
+                    return NotFound(respons.NotFound(masterEmployees));
+                }
 
-            return Ok(masterEmployees);
+                return Ok(respons.Success(masterEmployees));
+            }
+            catch (Exception ex) {
+                return BadRequest(respons.Error(ex.Message));
+            }
         }
 
-        [HttpPost]
-        public IActionResult Create(EmployeeVM employeeVM)
-        {
-            var employeeConverted = _mapper.Map(employeeVM);
-            var result = _employeeRepository.Create(employeeConverted);
-            if (result is null)
-            {
-                return BadRequest();
-            }
-            return Ok(result);
-
-        }
-        [HttpPut]
-        public IActionResult Update(EmployeeVM employeeVM)
-        {
-            var employeeConverted = _mapper.Map(employeeVM);
-            var isUpdated = _employeeRepository.Update(employeeConverted);
-            if (!isUpdated)
-            {
-                return BadRequest();
-            }
-            return Ok();
-        }
-        [HttpDelete]
-        public IActionResult Delete(Guid guid)
-        {
-            var isDeleted = _employeeRepository.Delete(guid);
-            if (!isDeleted)
-            {
-                return BadRequest();
-            }
-            return Ok();
-        }
     }
 }

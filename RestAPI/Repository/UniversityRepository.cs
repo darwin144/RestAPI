@@ -16,31 +16,31 @@ namespace RestAPI.Repository
 
         public University CreateWithValidate(University university)
         {
-            try
+             try 
+        {
+            var existingUniversityWithCode = _context.Universities.FirstOrDefault(u => u.Code == university.Code);
+            var existingUniversityWithName = _context.Universities.FirstOrDefault(u => u.Name == university.Name);
+
+            if (existingUniversityWithCode != null & existingUniversityWithName != null)
             {
-                var existingUniversityWithCode = _context.Universities.FirstOrDefault(u => u.Code == university.Code);
-                var existingUniversityWithName = _context.Universities.FirstOrDefault(u => u.Name == university.Name);
+                university.Guid = existingUniversityWithCode.Guid;
 
-                if (existingUniversityWithCode != null & existingUniversityWithName != null)
-                {
-                    university.Guid = existingUniversityWithCode.Guid;
-
-                    _context.SaveChanges();
-
-                }
-                else
-                {
-                    _context.Universities.Add(university);
-                    _context.SaveChanges();
-                }
-
-                return university;
+                _context.SaveChanges();
 
             }
-            catch
+            else
             {
-                return null;
+                _context.Universities.Add(university);
+                _context.SaveChanges();
             }
+
+            return university;
+
+        } 
+        catch 
+        {
+            return null;
+        }
 
 
 

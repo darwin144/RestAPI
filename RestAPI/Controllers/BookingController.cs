@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
+using RestAPI.Others;
 using RestAPI.Repository;
 using RestAPI.ViewModels.Bookings;
 using RestAPI.ViewModels.Educations;
@@ -11,53 +13,78 @@ using RestAPI.ViewModels.Universities;
 namespace RestAPI.Controllers
 {
 
-    [ApiController]
-    [Route("RestAPI/[controller]")]
-    public class BookingController : ControllerBase
+   
+    public class BookingController : GeneralController<Booking,BookingVM, IBookingRepository> 
     {
         private readonly IBookingRepository _bookingRepository;
-        private readonly IMapper<Booking, BookingVM> _mapper;
-        private readonly IRoomRepository _roomRepository;
-        private readonly IEmployeeRepository _employeeRepository;
 
-        public BookingController(IBookingRepository bokingRepository, IMapper<Booking, BookingVM> mapper, IRoomRepository roomRepository, IEmployeeRepository employeeRepository)
+        public BookingController(IGeneralRepository<Booking> generalRepository, IMapper<Booking, BookingVM> mapper, IBookingRepository bookingRepository) : base(generalRepository, mapper)
         {
-            _bookingRepository = bokingRepository;
-            _mapper = mapper;
-            _roomRepository = roomRepository;
-            _employeeRepository = employeeRepository;
+            _bookingRepository = bookingRepository;
         }
-
-
 
         [HttpGet("bookingduration")]
         public IActionResult GetDuration()
         {
-            var bookingLengths = _bookingRepository.GetBookingDuration();
-            if (!bookingLengths.Any())
+            try
             {
-                return NotFound();
+                var bookingLengths = _bookingRepository.GetBookingDuration();
+                if (!bookingLengths.Any())
+                {
+                    return NotFound(new ResponseVM<IEnumerable<BookingDurationVM>>
+                    {
+                        Code = 400,
+                        Status = "Failed",
+                        Message = "Data Not Found",
+                        Data = bookingLengths
+                    }
+                  );
+                }
+                return Ok(new ResponseVM<IEnumerable<BookingDurationVM>>
+                {
+                    Code = 200,
+                    Status = "OK",
+                    Message = "Success",
+                    Data = bookingLengths
+                }
+                   );
             }
-
-            return Ok(bookingLengths);
+            catch(Exception ex) {
+                return BadRequest(new ResponseVM<BookingDetailVM>
+                {
+                    Code = 500,
+                    Status = "Error",
+                    Message = ex.Message
+                }
+                );
+            }
         }
 
-
-
-        [HttpGet("BookingDetail")]
+        [HttpGet("AllBookingDetail")]
         public IActionResult GetAllBookingDetail()
         {
             try
-            {
-                
+            {               
                 var results = _bookingRepository.GetAllBookingDetail();
 
-                return Ok(results);
+                return Ok(new ResponseVM<IEnumerable<BookingDetailVM>>
+                {
+                    Code = 200,
+                    Status = "OK",
+                    Message = "Success",
+                    Data = results
+                 }
+                );
             }
             catch {
-                return Ok("Ada Error");
+                return NotFound(new ResponseVM<BookingDetailVM>
+                {
+                    Code = 500,
+                    Status = "Failed",
+                    Message = "Runtime error pada Code",
+                    }
+                );
             }
-
         }
         [HttpGet("BookingDetail/{guid}")]
         public IActionResult GetDetailByGuid(Guid guid)
@@ -65,74 +92,38 @@ namespace RestAPI.Controllers
             try
             {
                 var bookingDetailVM = _bookingRepository.GetBookingDetailByGuid(guid);
-
                 if (bookingDetailVM is null)
                 {
-                    return Ok("Tidak ditemukan objek dengan Guid ini");
+                    return NotFound(new ResponseVM<BookingDetailVM>
+                    {                        
+                        Code = 400,
+                        Status = "Failed",
+                        Message = "Data Not Found",
+                        Data = bookingDetailVM
+                    }
+                    );
                 }
+
+                return Ok(new ResponseVM <BookingDetailVM>
+                {
+                    Code = 200,
+                    Status = "OK",
+                    Message = "Success",
+                    Data = bookingDetailVM
+                }
+                );
                 
-
-                return Ok(bookingDetailVM);
             }
-            catch {
-                return Ok("Ada Error");
+            catch(Exception ex) {
+                return BadRequest(new ResponseVM<BookingDetailVM>
+                    {
+                    Code = 500,
+                    Status = "Error",
+                    Message = ex.Message                   
+                   }
+                );
             }
         }
 
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            var bookings = _bookingRepository.GetAll();
-            if (!bookings.Any())
-            {
-                return NotFound();
-            }
-            var bookingConverteds = bookings.Select(_mapper.Map).ToList();
-            return Ok(bookingConverteds);
-        }
-        [HttpGet("{guid}")]
-        public IActionResult GetByGuid(Guid guid)
-        {
-            var booking = _bookingRepository.GetByGuid(guid);
-            if (booking is null)
-            {
-                return NotFound();
-            }
-            var bookingConverted = _mapper.Map(booking);
-            return Ok(bookingConverted);
-        }
-        [HttpPost]
-        public IActionResult Create(BookingVM bookingVM)
-        {
-            var booking = _mapper.Map(bookingVM);
-            var result = _bookingRepository.Create(booking);
-            if (result is null)
-            {
-                return BadRequest();
-            }
-            return Ok(result);
-
-        }
-        [HttpPut]
-        public IActionResult Update(BookingVM bookingVM)
-        {
-            var booking = _mapper.Map(bookingVM);
-            var isUpdated = _bookingRepository.Update(booking);
-            if (!isUpdated)
-            {
-                return BadRequest();
-            }
-            return Ok();
-        }
-        [HttpDelete]
-        public IActionResult Delete(Guid guid)
-        {
-            var isDeleted = _bookingRepository.Delete(guid);
-            if (!isDeleted)
-            {
-                return BadRequest();
-            }
-            return Ok();
-        }
     }
 }
