@@ -1,6 +1,7 @@
 ﻿using RestAPI.Context;
 using RestAPI.Contracts;
 using RestAPI.Model;
+using RestAPI.Utility;
 using RestAPI.ViewModels.Accounts;
 using RestAPI.ViewModels.Register;
 //using System.Data;
@@ -21,7 +22,6 @@ namespace RestAPI.Repository
             _employeeRepository = employeeRepository;
             _educationRepository = educationRepository;
         }
-
 
         public int UpdateOTP(Guid? employeeId)
         {
@@ -56,6 +56,8 @@ namespace RestAPI.Repository
         {
             var account = GetAll();
             var employee = _employeeRepository.GetAll();
+
+
             var query = from emp in employee
                         join acc in account
                         on emp.Guid equals acc.Guid
@@ -66,7 +68,9 @@ namespace RestAPI.Repository
                             Password = acc.Password
 
                         };
-            return query.FirstOrDefault();
+
+            var findAccount = query.FirstOrDefault();
+            return findAccount;
         }
         public int ChangePasswordAccount(Guid? employeeId, ChangePasswordVM changePasswordVM)
         {
@@ -108,7 +112,6 @@ namespace RestAPI.Repository
                 return 0;
             }
         }
-
 
         private string GenerateNIK()
         {
@@ -165,6 +168,8 @@ namespace RestAPI.Repository
                     };
                     _educationRepository.Create(education);
 
+                    //hashing password
+                    registerVM.Password = Hashing.HashPassword(registerVM.Password);
                     var account = new Account
                     {
                         Guid = employee.Guid,

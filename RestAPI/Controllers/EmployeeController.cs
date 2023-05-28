@@ -10,13 +10,15 @@ namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class EmployeeController : GeneralController<Employee, EmployeeVM, IEmployeeRepository>
+    public class EmployeeController : GeneralController<Employee, EmployeeVM>
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IMapper<Employee, EmployeeVM> _mapper;
 
-        public EmployeeController(IEmployeeRepository employeeRepository,IGeneralRepository<Employee> generalRepository, IMapper<Employee, EmployeeVM> mapper) : base(generalRepository, mapper)
+        public EmployeeController(IEmployeeRepository employeeRepository, IMapper<Employee, EmployeeVM> mapper) : base(employeeRepository, mapper)
         {
             _employeeRepository = employeeRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("GetAllMasterEmployee")]

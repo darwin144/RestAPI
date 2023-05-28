@@ -12,17 +12,18 @@ namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class AccountController : GeneralController<Account, AccountVM, IAccountRepository>
+    public class AccountController : GeneralController<Account, AccountVM>
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IMapper<Account, AccountVM> _mapper;
         private readonly IEmployeeRepository _employeeRepository;
-        
 
-        public AccountController(IEmployeeRepository employeeRepository, IAccountRepository accountRepository, IGeneralRepository<Account> generalRepository, IMapper<Account, AccountVM> mapper) : base(generalRepository, mapper)
+
+        public AccountController(IAccountRepository accountRepository, IMapper<Account, AccountVM> mapper, IEmployeeRepository employeeRepository) : base(accountRepository, mapper)
         {
             _accountRepository = accountRepository;
+            _mapper = mapper;
             _employeeRepository = employeeRepository;
-           
         }
 
         [HttpPost("login")]
@@ -30,7 +31,7 @@ namespace RestAPI.Controllers
         {
             var respons = new ResponseVM<LoginVM>();
             try
-            {
+            {             
                 var account = _accountRepository.Login(loginVM);
 
                 if (account == null)
@@ -38,7 +39,10 @@ namespace RestAPI.Controllers
                     return NotFound(respons.NotFound(account));
                 }
 
-                if (account.Password != loginVM.Password)
+                var currentlyHash = Hashing.HashPassword(loginVM.Password);
+                var validatePassword = Hashing.ValidatePassword(loginVM.Password, currentlyHash);
+                //if (account.Password != loginVM.Password)
+                if (!validatePassword)
                 {
                     var message = "Password is invalid";
                     return NotFound(respons.NotFound(message));
@@ -59,6 +63,7 @@ namespace RestAPI.Controllers
             var respons = new ResponseVM<AccountResetPasswordVM>();
             try
             {
+                
                 var getGuid = _employeeRepository.FindGuidByEmail(email);
                 if (getGuid == null)
                 {
@@ -81,15 +86,14 @@ namespace RestAPI.Controllers
                             OTP = isUpdated
                         };
 
-                        MailService mailService = new MailService();
-                        mailService.WithSubject("Kode OTP")
-                                   .WithBody("OTP anda adalah: " + isUpdated.ToString() + ".\n" +
-                                             "Mohon kode OTP anda tidak diberikan kepada pihak lain" + ".\n" + "Terima kasih.")
-                                   .WithEmail(email)
-                                   .Send();
+                        EmailService _emailService = new EmailService("localhost",25, "no-reply@mcc.com");
+                        //EmailService _emailService = new EmailService();
+                        _emailService.SetEmail(hasil.Email)
+                            .SetSubject("Forgot Password")
+                            .SetHtmlMessage($"Your OTP is {hasil.OTP}")
+                            .SentEmailAsynch();
 
                         return Ok(respons.Success(hasil));
-
                 }
             }
             catch (Exception ex) {
@@ -135,6 +139,7 @@ namespace RestAPI.Controllers
         public IActionResult Register(RegisterVM registerVM)
         {
             var respons = new ResponseVM<RegisterVM>();
+            
             try
             {
                 var result = _accountRepository.Register(registerVM);

@@ -12,15 +12,16 @@ using RestAPI.ViewModels.Universities;
 
 namespace RestAPI.Controllers
 {
-
-   
-    public class BookingController : GeneralController<Booking,BookingVM, IBookingRepository> 
+  
+    public class BookingController : GeneralController<Booking,BookingVM> 
     {
         private readonly IBookingRepository _bookingRepository;
+        private readonly IMapper<Booking, BookingVM> _maper;
 
-        public BookingController(IGeneralRepository<Booking> generalRepository, IMapper<Booking, BookingVM> mapper, IBookingRepository bookingRepository) : base(generalRepository, mapper)
+        public BookingController(IBookingRepository bookingRepository, IMapper<Booking, BookingVM> mapper) : base(bookingRepository, mapper)
         {
             _bookingRepository = bookingRepository;
+            _maper = mapper;
         }
 
         [HttpGet("bookingduration")]

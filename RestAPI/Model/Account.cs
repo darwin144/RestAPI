@@ -5,7 +5,7 @@ namespace RestAPI.Model
     [Table("tb_m_accounts")]
     public class Account : BaseEntity
     {
-        [Column("password", TypeName = "nvarchar(20)")]
+        [Column("password")]
         public string Password { get; set; }
         [Column("is_deleted")]
         public bool IsDeleted { get; set; }

@@ -13,7 +13,7 @@ namespace RestAPI.Repository
             _context = context;
         }
 
-        public TEntity? Create(TEntity entity)
+        public TEntity Create(TEntity entity)
         {
             try
             {

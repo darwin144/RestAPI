@@ -7,21 +7,22 @@ using RestAPI.Others;
 using RestAPI.ViewModels.Bookings;
 using RestAPI.ViewModels.Rooms;
 using System;
+using System.Net;
 
 namespace RestAPI.Controllers
 {
 
     [Route("api/[controller]")]
     [ApiController]
-    public abstract class GeneralController<TEntity, TEntityVM, TInterfaceEntity> : ControllerBase  where TEntity : class
-        where TEntityVM : class 
-        where TInterfaceEntity : class
+    public class GeneralController<TEntity, TEntityVM> : ControllerBase  
+        
     {
         private readonly IGeneralRepository<TEntity> _generalRepository;
         private readonly IMapper<TEntity, TEntityVM> _mapper;
-        
 
-        protected GeneralController(IGeneralRepository<TEntity> generalRepository, IMapper<TEntity, TEntityVM> mapper)
+        private readonly ResponseVM<TEntityVM> respons = new ResponseVM<TEntityVM>();
+
+        public GeneralController(IGeneralRepository<TEntity> generalRepository, IMapper<TEntity, TEntityVM> mapper)
         {
             _generalRepository = generalRepository;
             _mapper = mapper;
@@ -79,7 +80,7 @@ namespace RestAPI.Controllers
                     return NotFound(new ResponseVM<TEntity>
                     {
                         Code = 400,
-                        Status = "Failed",
+                        Status = HttpStatusCode.NotFound.ToString(),
                         Message = "Gagal Update Data",
                     }
                   );
@@ -88,7 +89,7 @@ namespace RestAPI.Controllers
                 return Ok(new ResponseVM<TEntity>
                 {
                     Code = 200,
-                    Status = "OK",
+                    Status = HttpStatusCode.OK.ToString(),
                     Message = "Success"
 
                 }
@@ -117,7 +118,7 @@ namespace RestAPI.Controllers
                     return NotFound(new ResponseVM<TEntity>
                     {
                         Code = 400,
-                        Status = "Failed",
+                        Status = HttpStatusCode.NotFound.ToString(),
                         Message = "Gagal Delete Data",
                     }
                   );
@@ -126,7 +127,7 @@ namespace RestAPI.Controllers
                 return Ok(new ResponseVM<TEntity>
                 {
                     Code = 200,
-                    Status = "OK",
+                    Status = HttpStatusCode.OK.ToString(),
                     Message = "Success"
 
                 }
@@ -136,7 +137,7 @@ namespace RestAPI.Controllers
                 return BadRequest(new ResponseVM<TEntity>
                 {
                     Code = 500,
-                    Status = "Error",
+                    Status = HttpStatusCode.BadRequest.ToString(),
                     Message = ex.Message
 
                 }
@@ -152,75 +153,54 @@ namespace RestAPI.Controllers
                 var Entityresult = _generalRepository.GetByGuid(guid);
                 if (Entityresult is null)
                 {
-                    return NotFound(new ResponseVM<TEntity>
-                    {
-                        Code = 400,
-                        Status = "Failed",
-                        Message = "Not Found",
-                        Data = Entityresult
-                    }
-                 );
+                    return NotFound(respons.NotFound());
+                    /*                    return NotFound(new ResponseVM<TEntity>
+                                        {
+                                            Code = 400,
+                                            Status = HttpStatusCode.NotFound.ToString(),
+                                            Message = "Not Found",
+                                            Data = Entityresult
+                                        }
+                                     );
+                    */
                 }
                 var bookingConverted = _mapper.Map(Entityresult);
 
-                return Ok(new ResponseVM<TEntityVM>
-                {
-                    Code = 200,
-                    Status = "OK",
-                    Message = "Success",
-                    Data = bookingConverted
-                }
-                 );
+                return Ok(respons.Success(bookingConverted));
+                
             }
             catch(Exception ex) {
-                return BadRequest(new ResponseVM<TEntityVM>
+
+                return Ok(respons.Error(ex.Message));
+                /*return BadRequest(new ResponseVM<TEntityVM>
                 {
                     Code = 500,
-                    Status = "Erorr",
+                    Status = HttpStatusCode.BadRequest.ToString(),
                     Message = ex.Message
                 }
-                 );
+                 );*/
             }       
         }
         
         [HttpGet]
         public IActionResult GetAll()
         {
+            var respons = new ResponseVM<IEnumerable<TEntityVM>>();
             try
             {
                 var entities = _generalRepository.GetAll();
                 if (!entities.Any())
                 {
-
-                    return NotFound(new ResponseVM<IEnumerable<TEntity>>
-                    {
-                        Code = 400,
-                        Status = "Failed",
-                        Message = "Not Found",
-                        Data = entities
-                    }
-                 );
+                    return NotFound(respons.NotFound());
                 }
                 var entityConverteds = entities.Select(_mapper.Map).ToList();
 
-                return Ok(new ResponseVM<IEnumerable<TEntityVM>>
-                {
-                    Code = 200,
-                    Status = "OK",
-                    Message = "Success",
-                    Data = entityConverteds
-                }
-               );
+                return Ok(respons.Success(entityConverteds));
 
             }
             catch (Exception ex) {
-                return NotFound(new ResponseVM<TEntityVM>
-                {
-                    Code = 500,
-                    Status = "Erorr",
-                    Message = ex.Message
-                }
-              );
+
+                return NotFound(respons.Error(ex.Message));
 
             }
         }

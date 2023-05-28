@@ -2,8 +2,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using RestAPI.Context;
 using RestAPI.Contracts;
+using RestAPI.Controllers;
 using RestAPI.Model;
 using RestAPI.Repository;
+using RestAPI.Utility;
+using RestAPI.ViewModels.Accounts;
 using RestAPI.ViewModels.Universities;
 
 namespace RestAPI
@@ -31,16 +34,18 @@ namespace RestAPI
             builder.Services.AddScoped<IAccountRoleRepository, AccountRoleRepository>();
             builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 
-            builder.Services.AddScoped<IGeneralRepository<Booking>, BookingRepository>();
-            builder.Services.AddScoped<IGeneralRepository<University>, UniversityRepository>();
-            builder.Services.AddScoped<IGeneralRepository<Room>, RoomRepository>();
-            builder.Services.AddScoped<IGeneralRepository<Role>, RoleRepository>();
-            builder.Services.AddScoped<IGeneralRepository<Employee>, EmployeeRepository>();
-            builder.Services.AddScoped<IGeneralRepository<Education>, EducationRepository>();
-            builder.Services.AddScoped<IGeneralRepository<Account>, AccountRepository>();
-            builder.Services.AddScoped<IGeneralRepository<AccountRole>, AccountRoleRepository>();
 
             builder.Services.AddSingleton(typeof(IMapper<,>),typeof(Mapper<,>));
+
+
+            // add service email to the container
+            builder.Services.AddTransient<IEmailService, EmailService>(_ => new EmailService(
+                smtpServer : builder.Configuration["Email : SmtpServer"],
+                smtpPort : int.Parse(builder.Configuration["Email : SmtpPort"]),
+                fromEmailAddress : builder.Configuration["Email : FromEmailAddress"]                
+                ));
+
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

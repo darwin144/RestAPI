@@ -1,5 +1,6 @@
 ﻿using Azure;
 using RestAPI.ViewModels.Bookings;
+using System.Net;
 
 namespace RestAPI.Others
 {
@@ -15,18 +16,19 @@ namespace RestAPI.Others
             return new ResponseVM<Tentity>
             {
                 Code = 200,
-                Status = "Ok",
+                Status = HttpStatusCode.OK.ToString(),
                 Message = "Success",
                 Data = entity
             };
             
         }
+       
         public ResponseVM<Tentity> Success(string keterangan)
         {
             return new ResponseVM<Tentity>
             {
                 Code = 200,
-                Status = "Ok",
+                Status = HttpStatusCode.OK.ToString(),
                 Message = keterangan,
             };
 
@@ -36,8 +38,17 @@ namespace RestAPI.Others
             return new ResponseVM<Tentity>
             {
                 Code = 400,
-                Status = "null",
+                Status = HttpStatusCode.NotFound.ToString(),
                 Message = keterangan
+            };
+        }
+        public ResponseVM<Tentity> NotFound()
+        {
+            return new ResponseVM<Tentity>
+            {
+                Code = 400,
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data Tidak ada"
             };
         }
         public ResponseVM<Tentity> NotFound(Tentity entity)
@@ -45,16 +56,15 @@ namespace RestAPI.Others
             return new ResponseVM<Tentity>
             {
                 Code = 400,
-                Status = "null",
-                Message = "Data Kosong",
-                Data = entity
+                Status = HttpStatusCode.NotFound.ToString(),
+                Message = "Data Tidak ada"
             };
         }
         public ResponseVM<Tentity> Error(string explain) {
             return new ResponseVM<Tentity>
             {
                 Code = 500,
-                Status = "error",
+                Status = HttpStatusCode.BadRequest.ToString(),
                 Message = explain
             };
         }

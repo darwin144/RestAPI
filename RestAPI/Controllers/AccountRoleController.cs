@@ -9,12 +9,15 @@ namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class AccountRoleController : GeneralController<AccountRole, AccountRoleVM, IAccountRepository>
+    public class AccountRoleController : GeneralController<AccountRole, AccountRoleVM>
     {
-        
-        public AccountRoleController(IGeneralRepository<AccountRole> generalRepository, IMapper<AccountRole, AccountRoleVM> mapper) : base(generalRepository, mapper)
-        {
-        }
+        private readonly IAccountRoleRepository _AccountRoleRepository;
+        private readonly IMapper<AccountRole, AccountRoleVM> _mapper;
 
+        public AccountRoleController(IAccountRoleRepository accountRoleRepository, IMapper<AccountRole, AccountRoleVM> mapper) : base (accountRoleRepository, mapper)
+        {
+            _AccountRoleRepository = accountRoleRepository;
+            _mapper = mapper;
+        }
     }
 }

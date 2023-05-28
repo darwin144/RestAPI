@@ -7,13 +7,15 @@ namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class RoleController : GeneralController<Role, RoleVM, IRoleRepository>
+    public class RoleController : GeneralController<Role, RoleVM>
     {
-        
-        public RoleController(IGeneralRepository<Role> generalRepository, IMapper<Role, RoleVM> mapper) : base(generalRepository, mapper)
-        {
-        }
+        private readonly IRoleRepository _roleRepository;
+        private readonly IMapper<Role, RoleVM> _mapper;
 
-       
+        public RoleController(IRoleRepository roleRepository, IMapper<Role, RoleVM> mapper) : base(roleRepository, mapper)
+        {
+            _roleRepository = roleRepository;
+            _mapper = mapper;
+        }
     }
 }

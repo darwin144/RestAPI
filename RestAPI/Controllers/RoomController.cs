@@ -8,13 +8,15 @@ namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class RoomController : GeneralController<Room, RoomVM, IRoomRepository>
+    public class RoomController : GeneralController<Room, RoomVM>
     {
         private readonly IRoomRepository _roomRepository;
-        
-        public RoomController(IRoomRepository roomRepository, IGeneralRepository<Room> generalRepository, IMapper<Room, RoomVM> mapper) : base(generalRepository, mapper)
+        private readonly IMapper<Room, RoomVM> _mapper;
+
+        public RoomController(IRoomRepository roomRepository, IMapper<Room, RoomVM> mapper) : base(roomRepository, mapper)
         {
             _roomRepository = roomRepository;
+            _mapper = mapper;
         }
 
         [HttpGet("CurrentlyUsedRooms")]

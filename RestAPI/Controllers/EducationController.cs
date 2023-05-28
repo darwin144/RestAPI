@@ -10,12 +10,15 @@ namespace RestAPI.Controllers
 {
     [ApiController]
     [Route("RestAPI/[controller]")]
-    public class EducationController : GeneralController<Education, EducationVM, IEducationRepository>
+    public class EducationController : GeneralController<Education, EducationVM>
     {
-        public EducationController(IGeneralRepository<Education> generalRepository, IMapper<Education, EducationVM> mapper) : base(generalRepository, mapper)
-        {
-           
-        }
+        private readonly IEducationRepository _educationRepository;
+        private readonly IMapper<Education, EducationVM> _mapper;
 
+        public EducationController(IEducationRepository educationRepository, IMapper<Education, EducationVM> mapper) : base(educationRepository, mapper)
+        {
+            _educationRepository = educationRepository;
+            _mapper = mapper;
+        }
     }
 }
