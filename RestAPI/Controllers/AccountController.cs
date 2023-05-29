@@ -17,10 +17,12 @@ namespace RestAPI.Controllers
         private readonly IAccountRepository _accountRepository;
         private readonly IMapper<Account, AccountVM> _mapper;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEmailService _emailService; 
 
 
-        public AccountController(IAccountRepository accountRepository, IMapper<Account, AccountVM> mapper, IEmployeeRepository employeeRepository) : base(accountRepository, mapper)
+        public AccountController(IEmailService emailService, IAccountRepository accountRepository, IMapper<Account, AccountVM> mapper, IEmployeeRepository employeeRepository) : base(accountRepository, mapper)
         {
+            _emailService = emailService;
             _accountRepository = accountRepository;
             _mapper = mapper;
             _employeeRepository = employeeRepository;
@@ -58,7 +60,7 @@ namespace RestAPI.Controllers
         }
 
         [HttpPost("ForgotPassword" + "{email}")]
-        public IActionResult UpdateResetPass(String email)
+        public IActionResult UpdateResetPass(string email)
         {
             var respons = new ResponseVM<AccountResetPasswordVM>();
             try
@@ -86,9 +88,7 @@ namespace RestAPI.Controllers
                             OTP = isUpdated
                         };
 
-                        EmailService _emailService = new EmailService("localhost",25, "no-reply@mcc.com");
-                        //EmailService _emailService = new EmailService();
-                        _emailService.SetEmail(hasil.Email)
+                        _emailService.SetEmail(email)
                             .SetSubject("Forgot Password")
                             .SetHtmlMessage($"Your OTP is {hasil.OTP}")
                             .SentEmailAsynch();

@@ -41,10 +41,9 @@ namespace RestAPI
             // add service email to the container
             builder.Services.AddTransient<IEmailService, EmailService>(_ => new EmailService(
                 smtpServer : builder.Configuration["Email : SmtpServer"],
-                smtpPort : int.Parse(builder.Configuration["Email : SmtpPort"]),
+                smtpPort : Convert.ToInt32(builder.Configuration["Email : SmtpPort"]),
                 fromEmailAddress : builder.Configuration["Email : FromEmailAddress"]                
                 ));
-
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -63,7 +62,6 @@ namespace RestAPI
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
 
             app.MapControllers();
 
