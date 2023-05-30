@@ -1,9 +1,11 @@
 ﻿using Azure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.Others;
+using RestAPI.Utility;
 using RestAPI.ViewModels.Bookings;
 using RestAPI.ViewModels.Rooms;
 using System;
@@ -14,6 +16,10 @@ namespace RestAPI.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
+    //[Authorize(Roles =$"{nameof(RoleLevel.User)}")]  // all method will be get authorize (can use by method for spesificly)
+    // [Authorize(Roles =$"{nameof(RoleLevel.User)},{nameof(RoleLevel.Manager)}")]
+
     public class GeneralController<TEntity, TEntityVM> : ControllerBase  
         
     {
@@ -150,35 +156,20 @@ namespace RestAPI.Controllers
         {
             try
             {
-                var Entityresult = _generalRepository.GetByGuid(guid);
-                if (Entityresult is null)
+                var entityresult = _generalRepository.GetByGuid(guid);
+                if (entityresult is null)
                 {
-                    return NotFound(respons.NotFound());
-                    /*                    return NotFound(new ResponseVM<TEntity>
-                                        {
-                                            Code = 400,
-                                            Status = HttpStatusCode.NotFound.ToString(),
-                                            Message = "Not Found",
-                                            Data = Entityresult
-                                        }
-                                     );
-                    */
+                    return NotFound(ResponseVM<TEntity>.NotFound(entityresult));
                 }
-                var bookingConverted = _mapper.Map(Entityresult);
+                var bookingConverted = _mapper.Map(entityresult);
 
-                return Ok(respons.Success(bookingConverted));
+                return Ok(ResponseVM<TEntityVM>.Successfully(bookingConverted));
                 
             }
             catch(Exception ex) {
 
-                return Ok(respons.Error(ex.Message));
-                /*return BadRequest(new ResponseVM<TEntityVM>
-                {
-                    Code = 500,
-                    Status = HttpStatusCode.BadRequest.ToString(),
-                    Message = ex.Message
-                }
-                 );*/
+                return Ok(ResponseVM<string>.Error(ex.Message));
+                
             }       
         }
         
@@ -191,16 +182,16 @@ namespace RestAPI.Controllers
                 var entities = _generalRepository.GetAll();
                 if (!entities.Any())
                 {
-                    return NotFound(respons.NotFound());
+                    return NotFound(ResponseVM<TEntity>.NotFound(entities));
                 }
                 var entityConverteds = entities.Select(_mapper.Map).ToList();
 
-                return Ok(respons.Success(entityConverteds));
+                return Ok(ResponseVM<IEnumerable<TEntityVM>>.Successfully(entityConverteds));
 
             }
             catch (Exception ex) {
 
-                return NotFound(respons.Error(ex.Message));
+                return NotFound(ResponseVM<string>.Error(ex.Message));
 
             }
         }

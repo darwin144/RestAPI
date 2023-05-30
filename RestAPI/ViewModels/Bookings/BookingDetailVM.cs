@@ -1,6 +1,7 @@
 ﻿using RestAPI.Utility;
 using RestAPI.ViewModels.Employees;
 using RestAPI.ViewModels.Rooms;
+using System.ComponentModel.DataAnnotations;
 
 namespace RestAPI.ViewModels.Bookings
 {

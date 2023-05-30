@@ -10,5 +10,9 @@ namespace RestAPI.Contracts
         IEnumerable<MasterEmployeeVM> GetAllMasterEmployee();
         MasterEmployeeVM? GetMasterEmployeeByGuid(Guid guid);
         public Guid? FindGuidByEmail(string email);
+
+        public bool CheckEmailAndPhone(string value);
+
+        public Employee FindEmployeeByEmail(string email);
     }
 }

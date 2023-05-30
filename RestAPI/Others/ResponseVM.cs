@@ -12,7 +12,17 @@ namespace RestAPI.Others
         public Tentity? Data { get; set; }
 
 
-        public ResponseVM<Tentity> Success(Tentity entity) {
+        /*public static ResponseVM<Tentity> Successfully(Tentity entity) {
+            return new ResponseVM<Tentity>
+            {
+                Code = 200,
+                Status = HttpStatusCode.OK.ToString(),
+                Message = "Success",
+                Data = entity
+            };           
+        }*/
+        public static ResponseVM<Tentity> Successfully(Tentity entity)
+        {
             return new ResponseVM<Tentity>
             {
                 Code = 200,
@@ -20,20 +30,21 @@ namespace RestAPI.Others
                 Message = "Success",
                 Data = entity
             };
-            
+
         }
-       
-        public ResponseVM<Tentity> Success(string keterangan)
+
+        /*public static ResponseVM<Tentity>Successfully(Tentity keterangan)
         {
             return new ResponseVM<Tentity>
             {
                 Code = 200,
                 Status = HttpStatusCode.OK.ToString(),
-                Message = keterangan,
+                Message = "success",
+                Data = keterangan
+                
             };
-
-        }
-        public ResponseVM<Tentity> NotFound(string keterangan)
+        }*/
+        public static ResponseVM<Tentity> NotFound(string keterangan)
         {
             return new ResponseVM<Tentity>
             {
@@ -42,7 +53,8 @@ namespace RestAPI.Others
                 Message = keterangan
             };
         }
-        public ResponseVM<Tentity> NotFound()
+        
+        public static ResponseVM<Tentity> NotFound(IEnumerable<Tentity> entity)
         {
             return new ResponseVM<Tentity>
             {
@@ -51,7 +63,7 @@ namespace RestAPI.Others
                 Message = "Data Tidak ada"
             };
         }
-        public ResponseVM<Tentity> NotFound(Tentity entity)
+        public static ResponseVM<Tentity> NotFound(Tentity entity)
         {
             return new ResponseVM<Tentity>
             {
@@ -60,7 +72,7 @@ namespace RestAPI.Others
                 Message = "Data Tidak ada"
             };
         }
-        public ResponseVM<Tentity> Error(string explain) {
+        public static ResponseVM<Tentity> Error(string explain) {
             return new ResponseVM<Tentity>
             {
                 Code = 500,
@@ -68,5 +80,14 @@ namespace RestAPI.Others
                 Message = explain
             };
         }
+        /*public ResponseVM<Tentity> Error(string explain)
+        {
+            return new ResponseVM<Tentity>
+            {
+                Code = 500,
+                Status = HttpStatusCode.BadRequest.ToString(),
+                Message = explain
+            };
+        }*/
     }
 }

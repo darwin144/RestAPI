@@ -3,6 +3,7 @@ using RestAPI.Context;
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.ViewModels.Employees;
+using System.Linq;
 
 namespace RestAPI.Repository
 {
@@ -12,6 +13,14 @@ namespace RestAPI.Repository
         {
         }
 
+        public bool CheckEmailAndPhone(string value) {
+            /*var email = _context.Employees.Any(e => e.Email == value);
+            var phone = _context.Employees.Any(e => e.PhoneNumber == value);
+            */
+            return _context.Employees.Any(e => e.NIK == value && e.NIK == value && e.NIK == value);
+            
+            
+        }
         public Guid? FindGuidByEmail(string email)
         {
             try
@@ -122,6 +131,13 @@ namespace RestAPI.Repository
 
             _context.ChangeTracker.Clear();
             return entity;
+        }
+
+        public Employee FindEmployeeByEmail(string email)
+        {
+            var employee = _context.Set<Employee>().FirstOrDefault(a => a.Email == email);
+
+            return employee;
         }
     }
 }

@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.Others;
 using RestAPI.Repository;
+using RestAPI.Utility;
 using RestAPI.ViewModels.Bookings;
 using RestAPI.ViewModels.Educations;
 using RestAPI.ViewModels.Employees;
@@ -61,6 +63,7 @@ namespace RestAPI.Controllers
             }
         }
 
+        [Authorize(Roles = nameof(RoleLevel.Admin))]
         [HttpGet("AllBookingDetail")]
         public IActionResult GetAllBookingDetail()
         {

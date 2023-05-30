@@ -28,33 +28,33 @@ namespace RestAPI.Controllers
                 var room = _roomRepository.GetCurrentlyUsedRooms();
                 if (room.Count() < 1)
                 {
-                    return NotFound(respons.NotFound(room));
+                    return NotFound(ResponseVM<RoomUsedVM>.NotFound(room));
                 }
-                var succes = respons.Success(room);
-                return Ok(succes);
+
+                return Ok(ResponseVM<IEnumerable<RoomUsedVM>>.Successfully(room));
             }
             catch (Exception ex) {
 
-                return BadRequest(respons.Error(ex.Message));
+                return BadRequest(ResponseVM<string>.Error(ex.Message));
             }
         }
 
         [HttpGet("CurrentlyUsedRoomsByDate")]
         public IActionResult GetCurrentlyUsedRooms(DateTime dateTime)
         {
-            var respons = new ResponseVM<IEnumerable<MasterRoomVM>>();
+           
             try
             {
                 var room = _roomRepository.GetByDate(dateTime);
                 if (room is null)
                 {
-                    return NotFound(respons.NotFound(room));
+                    return NotFound(ResponseVM<MasterRoomVM>.NotFound(room));
                 }
 
-                return Ok(respons.Success(room));
+                return Ok(ResponseVM<IEnumerable<MasterRoomVM>>.Successfully(room));
             }
             catch(Exception ex) {
-                return BadRequest(respons.Error(ex.Message));
+                return BadRequest(ResponseVM<string>.Error(ex.Message));
             }
         }
         [HttpGet("RoomAvailable")]
@@ -65,35 +65,15 @@ namespace RestAPI.Controllers
                 var room = _roomRepository.GetRoomByDate();
                 if (room is null)
                 {
-                    return NotFound(new ResponseVM<IEnumerable<RoomBookedTodayVM>>
-                    {
-                        Code = 400,
-                        Status = "Not Found",
-                        Message = "Ruangan Tidak Ditemukan",
-                        Data = room
-                    }
-                    );
+                    return NotFound(ResponseVM<RoomBookedTodayVM>.NotFound(room));
+            
                 }
 
-                return Ok(new ResponseVM<IEnumerable<RoomBookedTodayVM>>
-                {
-
-                    Code = 200,
-                    Status = "OK",
-                    Message = "Success",
-                    Data = room
-                }
-                );
+                return Ok(ResponseVM<IEnumerable<RoomBookedTodayVM>>.Successfully(room));
             }
-            catch
+            catch(Exception ex)
             {
-                return NotFound(new ResponseVM<RoomBookedTodayVM>
-                {
-                    Code = 500,
-                    Status = "Failed",
-                    Message = "Runtime error acces Server",
-                }
-              );
+                return NotFound(ResponseVM<RoomBookedTodayVM>.Error(ex.Message));
             }
         }
 

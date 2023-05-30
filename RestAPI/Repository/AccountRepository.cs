@@ -2,6 +2,7 @@
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.Utility;
+using RestAPI.ViewModels.AccontRole;
 using RestAPI.ViewModels.Accounts;
 using RestAPI.ViewModels.Register;
 //using System.Data;
@@ -61,7 +62,7 @@ namespace RestAPI.Repository
             var query = from emp in employee
                         join acc in account
                         on emp.Guid equals acc.Guid
-                        where emp.Email == loginVM.Email
+                        where emp.Email == loginVM.Email 
                         select new LoginVM
                         {
                             Email = emp.Email,
@@ -181,6 +182,13 @@ namespace RestAPI.Repository
 
                     Create(account);
 
+                    var accountRole = new AccountRole {
+                        RoleGuid = Guid.Parse("f147a695-1a4f-4960-bffc-08db60bf618f"),
+                        AccountGuid = employee.Guid
+                     };
+                    _context.AccountRoles.Add(accountRole);
+                    _context.SaveChanges();
+
                     return 3;
 
                 }
@@ -189,6 +197,20 @@ namespace RestAPI.Repository
                     return 0;
                 }
             
+        }
+
+        public IEnumerable<string> GetRoles(Guid guid)
+        {
+            var account = GetByGuid(guid);
+            if (account is null) {
+                return Enumerable.Empty<string>();
+            }
+            var Accountroles = from accounts in _context.AccountRoles
+                        join roles in _context.Roles on accounts.Guid equals roles.Guid
+                        where accounts.Guid == guid
+                        select roles.Name;
+
+            return Accountroles;  
         }
     }
 }

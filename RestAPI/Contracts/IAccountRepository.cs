@@ -12,5 +12,7 @@ namespace RestAPI.Contracts
 
         int UpdateOTP(Guid? employeeId);
 
+        IEnumerable<string>? GetRoles(Guid guid);
+
     }
 }

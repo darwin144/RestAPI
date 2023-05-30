@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using RestAPI.Model;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace RestAPI.ViewModels.Educations
@@ -9,6 +10,7 @@ namespace RestAPI.ViewModels.Educations
         public Guid? Guid { get; set; } 
         public string Major { get; set; }
         public string Degree { get; set; }
+        [Range(0, 4, ErrorMessage = "GPA must be between 0 and 4")]
         public float GPA { get; set; }
         public Guid UniversityGuid { get; set; }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using RestAPI.Contracts;
 using RestAPI.Model;
 using RestAPI.Others;
@@ -7,6 +8,7 @@ using RestAPI.Utility;
 using RestAPI.ViewModels.Accounts;
 using RestAPI.ViewModels.Register;
 using RestAPI.ViewModels.Rooms;
+using System.Security.Claims;
 
 namespace RestAPI.Controllers
 {
@@ -17,28 +19,31 @@ namespace RestAPI.Controllers
         private readonly IAccountRepository _accountRepository;
         private readonly IMapper<Account, AccountVM> _mapper;
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IEmailService _emailService; 
+        private readonly IEmailService _emailService;
+        private readonly ITokenService _tokenService;
 
-
-        public AccountController(IEmailService emailService, IAccountRepository accountRepository, IMapper<Account, AccountVM> mapper, IEmployeeRepository employeeRepository) : base(accountRepository, mapper)
+        public AccountController(ITokenService tokenService, IEmailService emailService, IAccountRepository accountRepository, IMapper<Account, AccountVM> mapper, IEmployeeRepository employeeRepository) : base(accountRepository, mapper)
         {
             _emailService = emailService;
             _accountRepository = accountRepository;
             _mapper = mapper;
             _employeeRepository = employeeRepository;
+            _tokenService = tokenService;
         }
 
+        [AllowAnonymous]
         [HttpPost("login")]
         public IActionResult Login(LoginVM loginVM)
         {
             var respons = new ResponseVM<LoginVM>();
             try
-            {             
+            {
+                var employee = _employeeRepository.FindEmployeeByEmail(loginVM.Email);
                 var account = _accountRepository.Login(loginVM);
 
                 if (account == null)
                 {
-                    return NotFound(respons.NotFound(account));
+                    return NotFound(ResponseVM<LoginVM>.NotFound(account));
                 }
 
                 var currentlyHash = Hashing.HashPassword(loginVM.Password);
@@ -47,19 +52,33 @@ namespace RestAPI.Controllers
                 if (!validatePassword)
                 {
                     var message = "Password is invalid";
-                    return NotFound(respons.NotFound(message));
+                    return NotFound(ResponseVM<string>.NotFound(message));
                 }
 
-                return Ok(respons.Success(account));
+                var claims = new List<Claim> {
+                    new(ClaimTypes.NameIdentifier, employee.NIK),
+                    new(ClaimTypes.Name, $"{employee.FirstName} {employee.LastName}"),
+                    new(ClaimTypes.Email, employee.Email)
+
+                };
+
+                var roles = _accountRepository.GetRoles(employee.Guid);
+
+                claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+                var token = _tokenService.GenerateToken(claims);
+
+
+                return Ok(ResponseVM<string>.Successfully(token));
             }
             catch(Exception ex) {
 
-                return BadRequest(respons.Error(ex.Message));            
+                return BadRequest(ResponseVM<string>.Error(ex.Message));            
                        
             }
         }
-
-        [HttpPost("ForgotPassword" + "{email}")]
+        [AllowAnonymous]
+        [HttpPost("ForgotPassword/{email}")]
         public IActionResult UpdateResetPass(string email)
         {
             var respons = new ResponseVM<AccountResetPasswordVM>();
@@ -70,7 +89,7 @@ namespace RestAPI.Controllers
                 if (getGuid == null)
                 {
                     var message = "Akun tidak ditemukan";
-                    return NotFound(respons.NotFound(message));
+                    return NotFound(ResponseVM<string>.NotFound(message));
                 }
 
                 var isUpdated = _accountRepository.UpdateOTP(getGuid);
@@ -79,7 +98,7 @@ namespace RestAPI.Controllers
                 {
                     case 0:
                         var message = "OTP belum di update";
-                        return BadRequest(respons.NotFound(message));
+                        return BadRequest(ResponseVM<string>.NotFound(message));
 
                     default:
                         var hasil = new AccountResetPasswordVM
@@ -93,14 +112,14 @@ namespace RestAPI.Controllers
                             .SetHtmlMessage($"Your OTP is {hasil.OTP}")
                             .SentEmailAsynch();
 
-                        return Ok(respons.Success(hasil));
+                        return Ok(ResponseVM<AccountResetPasswordVM>.Successfully(hasil));
                 }
             }
             catch (Exception ex) {
-                return BadRequest(respons.Error(ex.Message));
+                return BadRequest(ResponseVM<string>.Error(ex.Message));
             }
         }
-
+        [AllowAnonymous]
         [HttpPost("ChangePassword")]
         public IActionResult ChangePassword(ChangePasswordVM changePasswordVM)
         {
@@ -113,28 +132,28 @@ namespace RestAPI.Controllers
                 switch (changePass)
                 {
                     case 0:
-                        return BadRequest(respons.Error("Runtime error"));
+                        return BadRequest(ResponseVM<string>.Error("Runtime error"));
                     case 1:
-                        return Ok(respons.Success("Password has been changed successfully"));
+                        return Ok(ResponseVM<string>.Successfully("Password has been changed successfully"));
                     case 2:
-                        return NotFound(respons.Error("Invalid OTP"));
+                        return BadRequest(ResponseVM<string>.Error("Invalid OTP"));
                     case 3:
-                        return NotFound(respons.Error("OTP has already been used"));
+                        return BadRequest(ResponseVM<string>.Error("OTP has already been used"));
                     case 4:
-                        return NotFound(respons.Error("OTP expired"));
+                        return BadRequest(ResponseVM<string>.Error("OTP expired"));
                     case 5:
-                        return BadRequest(respons.Error("Wrong Password No Same"));
+                        return BadRequest(ResponseVM<string>.Error("Wrong Password No Same"));
                     default:
-                        return BadRequest(respons.Error("Runtime error"));
+                        return BadRequest(ResponseVM<string>.Error("Runtime error"));
                 }
                 
             }
             catch (Exception ex) {
-                return BadRequest(respons.Error(ex.Message));
+                return BadRequest(ResponseVM<string>.Error(ex.Message));
             }
         }
 
-
+        [AllowAnonymous]
         [HttpPost("Register")]
         public IActionResult Register(RegisterVM registerVM)
         {
@@ -146,22 +165,34 @@ namespace RestAPI.Controllers
                 switch (result)
                 {
                     case 0:
-                        return BadRequest(respons.NotFound("Registration failed"));
+                        return BadRequest(ResponseVM<string>.Error("Registration failed"));
                     case 1:
-                        return BadRequest(respons.NotFound("Email already exists"));
+                        return BadRequest(ResponseVM<string>.Error("Email already exists"));
                     case 2:
-                        return BadRequest(respons.NotFound("Phone number already exists"));
+                        return BadRequest(ResponseVM<string>.Error("Phone number already exists"));
                     case 3:
-                        return Ok(respons.Success("Registration success"));
+                        return Ok(ResponseVM<string>.Successfully("Registration success"));
                 }
 
-                return Ok(respons.Success("Berhasil"));
+                return Ok(ResponseVM<string>.Successfully("Berhasil"));
             }
             catch(Exception ex) {
-                return BadRequest(respons.Error(ex.Message));
+                return BadRequest(ResponseVM<string>.Error(ex.Message));
             }
         }
 
+        [HttpGet("GetToken")]
+        public IActionResult GetByToken(string token) {
+            try
+            {
+                var claims = _tokenService.ExtractClaimsFromJwt(token);
+                return Ok(ResponseVM<ClaimVM>.Successfully(claims));
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ResponseVM<ClaimVM>.Error(ex.Message));
+            }
+        }
 
     }
 }

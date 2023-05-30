@@ -30,13 +30,13 @@ namespace RestAPI.Controllers
                 var masterEmployees = _employeeRepository.GetAllMasterEmployee();
                 if (!masterEmployees.Any())
                 {
-                    return NotFound(respons.NotFound(masterEmployees));
+                    return NotFound(ResponseVM<MasterEmployeeVM>.NotFound(masterEmployees));
                 }
 
-                return Ok(respons.Success(masterEmployees));
+                return Ok(ResponseVM<IEnumerable<MasterEmployeeVM>>.Successfully(masterEmployees));
             }
             catch (Exception ex) {
-                return BadRequest(respons.Error(ex.Message));
+                return BadRequest(ResponseVM<string>.Error(ex.Message));
             }
         }
 
@@ -49,13 +49,13 @@ namespace RestAPI.Controllers
                 var masterEmployees = _employeeRepository.GetMasterEmployeeByGuid(guid);
                 if (masterEmployees is null)
                 {
-                    return NotFound(respons.NotFound(masterEmployees));
+                    return NotFound(ResponseVM<MasterEmployeeVM>.NotFound(masterEmployees));
                 }
 
-                return Ok(respons.Success(masterEmployees));
+                return Ok(ResponseVM<MasterEmployeeVM>.Successfully(masterEmployees));
             }
             catch (Exception ex) {
-                return BadRequest(respons.Error(ex.Message));
+                return BadRequest(ResponseVM<string>.Error(ex.Message));
             }
         }
 

@@ -1,4 +1,6 @@
-﻿namespace RestAPI.ViewModels.Accounts
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace RestAPI.ViewModels.Accounts
 {
     public class AccountResetPasswordVM
     {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RestAPI.Model;
+using RestAPI.Utility;
 using System.Collections.Generic;
 
 namespace RestAPI.Context
@@ -23,6 +24,30 @@ namespace RestAPI.Context
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            // set tabel role agar data tidak berubah saat migrasi
+            builder.Entity<Role>().HasData(new Role
+            {
+                Guid = Guid.Parse("f147a695-1a4f-4960-bffc-08db60bf618f"),
+                Name = nameof(RoleLevel.User),
+                CreatedDate =DateTime.Now,
+                ModifiedDate = DateTime.Now
+            },
+              new Role
+              {
+                  Guid = Guid.Parse("c22a20c5-0149-41fd-bffd-08db60bf618f"),
+                  Name = nameof(RoleLevel.Manager),
+                  CreatedDate = DateTime.Now,
+                  ModifiedDate = DateTime.Now
+              },
+              new Role
+              {
+                  Guid = Guid.Parse("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
+                  Name = nameof(RoleLevel.Admin),
+                  CreatedDate = DateTime.Now,
+                  ModifiedDate = DateTime.Now
+              }
+            );
 
 
             // set up unique on the class

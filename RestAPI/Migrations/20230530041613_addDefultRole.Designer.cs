@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using RestAPI.Context;
 
@@ -11,9 +12,11 @@ using RestAPI.Context;
 namespace RestAPI.Migrations
 {
     [DbContext(typeof(BookingManagementContext))]
-    partial class BookingManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20230530041613_addDefultRole")]
+    partial class addDefultRole
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
