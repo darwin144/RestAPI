@@ -1,0 +1,52 @@
+﻿
+.row {
+    position: relative;
+    background-color: aqua;
+}
+
+.col-6 {
+    background-color:blueviolet;
+    border: 1px solid white;
+    color:white;
+    margin-right:0px;
+}
+.w-200 {
+    border:1px solid white; 
+}
+
+.row-12 {
+    background-color: blueviolet;
+    color:white;
+    padding-right:0px;
+
+}
+    .row-12::first-letter {
+        color:white;
+        font-weight:500;
+        font-size:20px;
+    }
+.tombol {
+    display: inline;
+    position: relative;
+    margin-top: 10px;
+}
+    .tombol > #start {
+        display: inline;
+        background-color: deepskyblue;
+        color:cornsilk;
+        border:4px solid white;
+    }
+    .tombol > #changes-background {
+        background-color: lawngreen;
+        color: cornsilk;
+    }
+    .tombol > #changes-background {
+        background-color: darkred;
+        color: cornsilk;
+    }
+.tombol > #show-text:hover {
+    background-color: aquamarine;
+}
+
+
+

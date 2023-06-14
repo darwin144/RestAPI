@@ -134,10 +134,9 @@ namespace RestAPI.Repository
         }
 
         public Employee FindEmployeeByEmail(string email)
-        {
-            var employee = _context.Set<Employee>().FirstOrDefault(a => a.Email == email);
+        {        
 
-            return employee;
+            return _context.Set<Employee>().FirstOrDefault(a => a.Email == email);
         }
     }
 }

@@ -1,0 +1,79 @@
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 1200px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+}
+
+/*
+    modal employee
+*/
+
+.modal-dialog {
+    background-color: aqua;
+    color: black;
+    font-family:sans-serif;
+}
+#modal-content-employee {
+    background-color:aqua;
+}
+
+#modal-content-employee > #header-employee > #row-employee{
+    font-size: 18px;
+    font-family:sans-serif;
+    color: black;
+    background-color:aqua;
+}
+
+    #modal-content-employee > #header-employee > #row-employee > #paragraf > p {
+        font-weight: 100;
+        font-size:18px;
+    }
+
+#modal-content-employee > #employeeModalBody > .container-fluid > #row-modal{
+    background-color:aqua;
+    padding-bottom:10px;
+}
+#modal-content-employee > #employeeModalBody > #formEmployee > .container-fluid > #row-modal{
+    background-color:burlywood;
+    color: black;
+}
+#modal-content-employee > #employeeModalBody > #formEmployee > .container-fluid > #row-modal > .form-control {
+    background-color:aquamarine;
+    color: black;
+}
+/*file index*/
+#pokemons-table {
+    background-color: cyan;
+}
+    #pokemons-table th {
+        border: 1px solid black;
+        color: black;
+        font-weight: 600;
+        text-align: center;
+        font-family:'MS Reference Sans Serif';
+        background-color: mediumaquamarine;
+    }
+    #pokemons-table td{
+        border:1px solid black;
+        text-align: center;
+    }
+        #pokemons-table td:nth-child(2) {
+            text-transform: capitalize;
+        }
+        #pokemons-table td #button {
+            border: 2px solid blue;
+            color: white;
+        }

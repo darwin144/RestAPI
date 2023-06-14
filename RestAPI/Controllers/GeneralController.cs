@@ -16,7 +16,7 @@ namespace RestAPI.Controllers
 
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
+    //[Authorize]
     //[Authorize(Roles =$"{nameof(RoleLevel.User)}")]  // all method will be get authorize (can use by method for spesificly)
     // [Authorize(Roles =$"{nameof(RoleLevel.User)},{nameof(RoleLevel.Manager)}")]
 
@@ -113,7 +113,7 @@ namespace RestAPI.Controllers
              }
 
         }
-        [HttpDelete]
+        [HttpDelete("{guid}")]
         public IActionResult Delete(Guid guid)
         {
             try

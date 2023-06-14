@@ -147,7 +147,7 @@ namespace RestAPI
 
             app.UseAuthorization();
 
-            //app.UseCors();
+            app.UseCors();
 
             app.MapControllers();
 

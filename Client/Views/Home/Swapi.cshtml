@@ -1,0 +1,233 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+
+}
+
+<link href="~/css/swapi.css" rel="stylesheet" />
+
+<div class="wrapper-title">
+    <h6 class="employee">Employee API Resource</h6>
+    <button class="btn btn-success btn-create" data-toggle="modal" data-bs-target="#employeeModal2" onclick="openEmployeeModal2()">Create Data</button>
+</div>
+
+<table class="table table-bordered table-striped" id="star-war">
+    <thead>
+        <tr>
+            <th>No.</th>
+            <th>NIK</th>
+            <th>Fullname</th>
+            <th>Email</th>
+            <th>Birthdate</th>
+            <th>Hiring Date</th>
+            <th>Actions</th>
+           
+        </tr>
+    </thead>
+    <tbody>
+      
+    </tbody>
+</table>
+
+@*
+employee modal Post
+*@
+
+<div class="modal fade" id="employeeModal2" tabindex="-1" role="dialog" aria-labelledby="employeeModal2" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" id="modal-content-employee">
+            <div class="modal-header" id="header-employee">
+                <div class="row" id="row-employee">
+                    <div class="col-md-12">
+                        <h2 id="employeeModalLabel"> Registration</h2>
+                    </div>
+                    <div class="col-md-12" id="paragraf">
+                        <p> use a permanent address where you can receive mail</p>
+                    </div>
+                </div>
+            </div>
+            <div class="body" id="employeeModalBody">
+                <form method="POST" id="formEmployee2">
+                    <div class="container-fluid">
+                        <div class="row" id="row-modal">
+
+                            <div class="col-md-6">
+                                <label class="form-label">Firstname:</label>
+                                <input type="text" class="form-control" id="firstName" name="firstName" required />
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                                <div class="invalid-feedback">
+                                    invalid.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Lastname:</label>
+                                <input type="text" class="form-control" id="lastName" name="lastName" />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Birthdate:</label>
+                                <input type="date" class="form-control" id="birthDate" name="birthDate" max="today" required />
+                            </div>
+                            <div class="col-md-12 gender">
+                                <label class="form-label">Gender:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender-l" value=1 checked />
+                                    <label class="form-check-label" for="gender-l">
+                                        Laki-laki
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender" id="gender-p" value=0 checked />
+                                    <label class="form-check-label" for="gender-p">
+                                        Perempuan
+                                    </label>
+                                </div>
+                            </div>
+                           <div class="col-md-12">
+                                <label class="form-label">Hiring Date:</label>
+                                <input type="date" class="form-control" id="hiringDate" name="hiringDate" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Email:</label>
+                                <input type="email" class="form-control" id="email" name="email" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Phone Number :</label>
+                                <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" pattern="(\+62|62|0)8|[1-9][0-9]{6,9}$" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Major :</label>
+                                <input type="tel" class="form-control" id="major" name="major" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Degree :</label>
+                                <input type="tel" class="form-control" id="degree" name="degree" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">GPA :</label>
+                                <input type="tel" class="form-control" id="gpa" name="gpa" max="4" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Code :</label>
+                                <input type="tel" class="form-control" id="code" name="code" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Univeristy Name :</label>
+                                <input type="tel" class="form-control" id="name" name="name" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Password :</label>
+                                <input type="tel" class="form-control" id="password" name="password" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Confirm Password :</label>
+                                <input type="tel" class="form-control" id="confirmPassword" name="confirmPassword" required />
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary" type="submit" onclick="submitFormEmployee()">Submit form</button>
+                        <button type="button" class="btn btn-danger" data-dismiss="modal" onclick="closeModal2()">Close</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+@*
+modal employee update*@
+
+<div class="modal fade" id="employeeModalUpdate" tabindex="-1" role="dialog" aria-labelledby="employeeModalUpdate" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content" id="modal-content-employee">
+            <div class="modal-header" id="header-employee">
+                <div class="row" id="row-employee">
+                    <div class="col-md-12">
+                        <h2 id="employeeModalLabel-update"> Registration</h2>
+                    </div>
+                    
+                </div>
+            </div>
+            <div class="body" id="employeeModalBody">
+                <form class="row g-3 needs-validation" novalidate id="formEmployeeUpdate" onsubmit="updateEmployee()">
+                    <div class="container-fluid">
+                        <div class="row" id="row-modal">
+
+                            <div class="col-md-12">
+                                <label class="form-label">NIK:</label>
+                                <input type="text" class="form-control" id="nik-update" name="nik" required />
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Firstname:</label>
+                                <input type="text" class="form-control" id="firstName-update" name="firstName" required />
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                                <div class="invalid-feedback">
+                                    invalid.
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">Lastname:</label>
+                                <input type="text" class="form-control" id="lastName-update" name="lastName" />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Birthdate:</label>
+                                <input type="date" class="form-control" id="birthDate-update" name="birthDate" max="today" required />
+                            </div>
+                            <div class="col-md-12 gender">
+                                <label class="form-label">Gender:</label>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender-update" id="gender-l" checked />
+                                    <label class="form-check-label" for="gender-l">
+                                        Laki-laki
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" name="gender-update" id="gender-p" checked />
+                                    <label class="form-check-label" for="gender-p">
+                                        Perempuan
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Email:</label>
+                                <input type="email" class="form-control" id="email-update" name="email" required />
+                            </div>
+                            <div class="col-md-12">
+                                <label class="form-label">Phone Number :</label>
+                                <input type="tel" class="form-control" id="phoneNumber-update" name="phoneNumber" pattern="(\+62|62|0)8|[1-9][0-9]{6,9}$" required />
+                            </div>
+                                                       
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <button class="btn btn-primary" type="submit" >Update Data</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="pokemonModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="pokemonModalLabel"> </h5>
+                
+            </div>
+            <div class="modal-body" id="pokemonModalBody">
+                <canvas id="chartContainer"></canvas>
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>

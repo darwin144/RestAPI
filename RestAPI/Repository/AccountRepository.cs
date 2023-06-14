@@ -116,7 +116,7 @@ namespace RestAPI.Repository
 
         private string GenerateNIK()
         {
-            var lastNik = _employeeRepository.GetAll().OrderByDescending(e => int.Parse(e.NIK)).FirstOrDefault();
+            var lastNik = _employeeRepository.GetAll().OrderByDescending(e => Convert.ToInt32(e.NIK)).FirstOrDefault();
 
             if (lastNik != null)
             {

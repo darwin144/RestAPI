@@ -46,9 +46,8 @@ namespace RestAPI.Controllers
                     return NotFound(ResponseVM<LoginVM>.NotFound(account));
                 }
 
-                var currentlyHash = Hashing.HashPassword(loginVM.Password);
-                var validatePassword = Hashing.ValidatePassword(loginVM.Password, currentlyHash);
-                //if (account.Password != loginVM.Password)
+                
+                var validatePassword = Hashing.ValidatePassword(loginVM.Password, account.Password);
                 if (!validatePassword)
                 {
                     var message = "Password is invalid";
@@ -153,7 +152,7 @@ namespace RestAPI.Controllers
             }
         }
 
-        [AllowAnonymous]
+        //[AllowAnonymous]
         [HttpPost("Register")]
         public IActionResult Register(RegisterVM registerVM)
         {
